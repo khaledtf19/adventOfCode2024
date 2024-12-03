@@ -26,6 +26,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let safe_reports_part1: Vec<&Vec<i32>> =
         reports.iter().filter(|report| part1(report)).collect();
     println!("Safe Reports Part1: {}", safe_reports_part1.len());
+    let safe_reports_part2: Vec<&Vec<i32>> =
+        reports.iter().filter(|report| part2(report)).collect();
+    println!("Safe Reports Part2: {:?}", safe_reports_part2.len());
 
     Ok(())
 }
@@ -54,4 +57,29 @@ fn part1(report: &[i32]) -> bool {
     }
 
     true
+}
+
+fn part2(report: &[i32]) -> bool {
+    for i in 0..report.len() {
+        let filtered: Vec<i32> = report
+            .iter()
+            .enumerate()
+            .filter(|&(index, _)| index != i)
+            .map(|(_, &val)| val)
+            .collect();
+
+        if is_valid_sequence(&filtered) {
+            return true;
+        }
+    }
+    false
+}
+
+fn is_valid_sequence(seq: &[i32]) -> bool {
+    let is_increasing = seq.windows(2).all(|w| w[0] < w[1]);
+    let is_decreasing = seq.windows(2).all(|w| w[0] > w[1]);
+
+    let valid_differences = seq.windows(2).all(|w| (w[0] - w[1]).abs() <= 3);
+
+    (is_increasing || is_decreasing) && valid_differences
 }
